@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: startedKit
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+  datasource:
+    url: jdbc:h2:mem:starterkitdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        # Esta línea soluciona el mapeo de Enums en H2 / MySQL:
+        type:
+          preferred_enum_type: varchar
+
+app:
+  jwt:
+    secret: dGFtYmllbl91bmFfY2xhdmVfc2VjcmV0YV9tdXlfbGFyZ2FfeV9zZWd1cmFfcGFyYV9qd3RfMjAyNg==
+    expiration-ms: 86400000
