@@ -1,53 +1,53 @@
 package com.startedKitApp.startedKit.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "productos")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
+    @Column(nullable = false, length = 100)
     private String nombre;
-    private Double precio;
 
-    // Constructor vacío exigido por JPA
-    public Producto() {
-    }
+    @Size(max = 255, message = "La descripción no puede superar los 255 caracteres")
+    private String descripcion;
 
-    public Producto(String nombre, Double precio) {
-        this.nombre = nombre;
-        this.precio = precio;
-    }
+    @NotNull(message = "El precio es obligatorio")
+    @PositiveOrZero(message = "El precio debe ser mayor o igual a 0")
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal precio;
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
-    }
+    @NotNull(message = "El stock es obligatorio")
+    @Min(value = 0, message = "El stock no puede ser negativo")
+    @Column(nullable = false)
+    private Integer stock;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @NotBlank(message = "La categoría es obligatoria")
+    @Column(nullable = false, length = 50)
+    private String categoria;
 
-    public String getNombre() {
-        return nombre;
-    }
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean activo = true;
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 }

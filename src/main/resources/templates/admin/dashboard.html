@@ -11,25 +11,53 @@
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
 <main class="container my-4 flex-grow-1">
-    <!-- Formulario para Agregar Producto -->
+
+    <!-- Banner de Mensajes de Éxito / Error -->
+    <div th:if="${mensajeÉxito}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <span th:text="${mensajeÉxito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Formulario de Alta con Validación (5 Campos) -->
     <div class="card shadow-sm border-0 p-4 mb-4">
         <h4 class="card-title text-primary mb-3">Agregar Nuevo Producto</h4>
         <form th:action="@{/admin/productos/guardar}" th:object="${nuevoProducto}" method="post" class="row g-3">
-            <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre del Producto</label>
-                <input type="text" th:field="*{nombre}" class="form-control" id="nombre" placeholder="Ej: Teclado Mecánico" required>
-            </div>
             <div class="col-md-4">
-                <label for="precio" class="form-label">Precio</label>
-                <input type="number" step="0.01" th:field="*{precio}" class="form-control" id="precio" placeholder="0.00" required>
+                <label for="nombre" class="form-label fw-bold">Nombre</label>
+                <input type="text" th:field="*{nombre}" class="form-control" th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'" id="nombre" placeholder="Ej: Teclado Mecánico">
+                <div class="invalid-feedback" th:errors="*{nombre}"></div>
+            </div>
+            <div class="col-md-3">
+                <label for="categoria" class="form-label fw-bold">Categoría</label>
+                <input type="text" th:field="*{categoria}" class="form-control" th:classappend="${#fields.hasErrors('categoria')} ? 'is-invalid'" id="categoria" placeholder="Ej: Periféricos">
+                <div class="invalid-feedback" th:errors="*{categoria}"></div>
+            </div>
+            <div class="col-md-3">
+                <label for="precio" class="form-label fw-bold">Precio ($)</label>
+                <input type="number" step="0.01" th:field="*{precio}" class="form-control" th:classappend="${#fields.hasErrors('precio')} ? 'is-invalid'" id="precio" placeholder="0.00">
+                <div class="invalid-feedback" th:errors="*{precio}"></div>
+            </div>
+            <div class="col-md-2">
+                <label for="stock" class="form-label fw-bold">Stock</label>
+                <input type="number" th:field="*{stock}" class="form-control" th:classappend="${#fields.hasErrors('stock')} ? 'is-invalid'" id="stock" placeholder="0">
+                <div class="invalid-feedback" th:errors="*{stock}"></div>
+            </div>
+            <div class="col-md-10">
+                <label for="descripcion" class="form-label fw-bold">Descripción</label>
+                <input type="text" th:field="*{descripcion}" class="form-control" th:classappend="${#fields.hasErrors('descripcion')} ? 'is-invalid'" id="descripcion" placeholder="Breve especificación técnica">
+                <div class="invalid-feedback" th:errors="*{descripcion}"></div>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-success w-100">Guardar</button>
+                <button type="submit" class="btn btn-success w-100 fw-bold">Guardar</button>
             </div>
         </form>
     </div>
 
-    <!-- Tabla de Productos -->
+    <!-- Tabla de Productos Completa -->
     <div class="card shadow-sm border-0 p-4">
         <h4 class="card-title text-dark mb-3">Listado de Productos</h4>
         <div class="table-responsive">
@@ -37,7 +65,9 @@
                 <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
+                    <th>Nombre / Descripción</th>
+                    <th>Categoría</th>
+                    <th>Stock</th>
                     <th>Precio</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -45,27 +75,27 @@
                 <tbody>
                 <tr th:each="prod : ${productos}">
                     <td th:text="${prod.id}">1</td>
-                    <td th:text="${prod.nombre}">Producto Ejemplo</td>
-                    <!-- Formateo de Moneda: $ 150.000,00 -->
+                    <td>
+                        <strong th:text="${prod.nombre}"></strong>
+                        <div class="small text-muted" th:text="${prod.descripcion}"></div>
+                    </td>
+                    <td><span class="badge bg-secondary" th:text="${prod.categoria}"></span></td>
+                    <td>
+                        <span th:text="${prod.stock}" th:classappend="${prod.stock < 5} ? 'text-danger fw-bold' : ''"></span> u.
+                    </td>
                     <td th:text="${'$ ' + #numbers.formatDecimal(prod.precio, 1, 'POINT', 2, 'COMMA')}">$ 0,00</td>
                     <td class="text-center">
-                        <!-- Botón Editar abre Modal -->
-                        <button type="button"
-                                class="btn btn-warning btn-sm text-white me-1"
-                                data-bs-toggle="modal"
-                                th:data-bs-target="${'#editModal' + prod.id}">
+                        <!-- Botón Editar -->
+                        <button type="button" class="btn btn-warning btn-sm text-white me-1" data-bs-toggle="modal" th:data-bs-target="${'#editModal' + prod.id}">
                             Editar
                         </button>
 
-                        <!-- Botón Eliminar abre Modal de Confirmación -->
-                        <button type="button"
-                                class="btn btn-danger btn-sm"
-                                data-bs-toggle="modal"
-                                th:data-bs-target="${'#deleteModal' + prod.id}">
+                        <!-- Botón Eliminar -->
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="${'#deleteModal' + prod.id}">
                             Eliminar
                         </button>
 
-                        <!-- Modal de Edición para cada producto -->
+                        <!-- Modal de Edición Completo -->
                         <div class="modal fade" th:id="${'editModal' + prod.id}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content text-start">
@@ -77,12 +107,26 @@
                                         <div class="modal-body">
                                             <input type="hidden" name="id" th:value="${prod.id}">
                                             <div class="mb-3">
-                                                <label class="form-label">Nombre del Producto</label>
+                                                <label class="form-label fw-bold">Nombre</label>
                                                 <input type="text" name="nombre" class="form-control" th:value="${prod.nombre}" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Precio</label>
-                                                <input type="number" step="0.01" name="precio" class="form-control" th:value="${prod.precio}" required>
+                                                <label class="form-label fw-bold">Categoría</label>
+                                                <input type="text" name="categoria" class="form-control" th:value="${prod.categoria}" required>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 mb-3">
+                                                    <label class="form-label fw-bold">Precio ($)</label>
+                                                    <input type="number" step="0.01" name="precio" class="form-control" th:value="${prod.precio}" required>
+                                                </div>
+                                                <div class="col-6 mb-3">
+                                                    <label class="form-label fw-bold">Stock</label>
+                                                    <input type="number" name="stock" class="form-control" th:value="${prod.stock}" required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Descripción</label>
+                                                <input type="text" name="descripcion" class="form-control" th:value="${prod.descripcion}">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -117,7 +161,7 @@
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(productos)}">
-                    <td colspan="4" class="text-center text-muted">No hay productos registrados en el sistema.</td>
+                    <td colspan="6" class="text-center text-muted">No hay productos registrados en el sistema.</td>
                 </tr>
                 </tbody>
             </table>
