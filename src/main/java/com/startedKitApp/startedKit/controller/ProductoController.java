@@ -1,5 +1,6 @@
 package com.startedKitApp.startedKit.controller;
 
+import com.startedKitApp.startedKit.exception.ResourceNotFoundException;
 import com.startedKitApp.startedKit.model.Producto;
 import com.startedKitApp.startedKit.repository.ProductoRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,9 +44,9 @@ public class ProductoController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
-        return productoRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con el ID: " + id));
+        return ResponseEntity.ok(producto);
     }
 
     @Operation(summary = "Crear nuevo producto")
@@ -58,26 +59,26 @@ public class ProductoController {
     @Operation(summary = "Actualizar producto existente")
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @Valid @RequestBody Producto productoDetalles) {
-        return productoRepository.findById(id)
-                .map(p -> {
-                    p.setNombre(productoDetalles.getNombre());
-                    p.setCategoria(productoDetalles.getCategoria());
-                    p.setPrecio(productoDetalles.getPrecio());
-                    p.setStock(productoDetalles.getStock());
-                    p.setDescripcion(productoDetalles.getDescripcion());
-                    p.setActivo(productoDetalles.getActivo());
-                    return ResponseEntity.ok(productoRepository.save(p));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con el ID: " + id));
+
+        producto.setNombre(productoDetalles.getNombre());
+        producto.setCategoria(productoDetalles.getCategoria());
+        producto.setPrecio(productoDetalles.getPrecio());
+        producto.setStock(productoDetalles.getStock());
+        producto.setDescripcion(productoDetalles.getDescripcion());
+        producto.setActivo(productoDetalles.getActivo());
+
+        return ResponseEntity.ok(productoRepository.save(producto));
     }
 
     @Operation(summary = "Eliminar producto por ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
-        if (productoRepository.existsById(id)) {
-            productoRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con el ID: " + id));
+
+        productoRepository.delete(producto);
+        return ResponseEntity.noContent().build();
     }
 }
