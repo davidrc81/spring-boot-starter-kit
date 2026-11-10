@@ -24,6 +24,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        // Si la petición viene de la UI web (/login, /admin), no ejecutar el filtro JWT
+        return path.startsWith("/login")
+                || path.startsWith("/admin")
+                || path.startsWith("/css")
+                || path.startsWith("/js")
+                || path.startsWith("/images")
+                || path.startsWith("/favicon.ico");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
