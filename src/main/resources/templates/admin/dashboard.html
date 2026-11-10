@@ -7,12 +7,11 @@
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
 
-<!-- Navbar reutilizable -->
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
 <main class="container my-4 flex-grow-1">
 
-    <!-- Banner de Mensajes de Éxito / Error -->
+    <!-- Mensajes Flash -->
     <div th:if="${mensajeÉxito}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
         <span th:text="${mensajeÉxito}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -22,7 +21,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <!-- Formulario de Alta con Validación (5 Campos) -->
+    <!-- Formulario de Alta -->
     <div class="card shadow-sm border-0 p-4 mb-4">
         <h4 class="card-title text-primary mb-3">Agregar Nuevo Producto</h4>
         <form th:action="@{/admin/productos/guardar}" th:object="${nuevoProducto}" method="post" class="row g-3">
@@ -57,9 +56,19 @@
         </form>
     </div>
 
-    <!-- Tabla de Productos Completa -->
+    <!-- Tabla de Productos con Buscador Limpio -->
     <div class="card shadow-sm border-0 p-4">
-        <h4 class="card-title text-dark mb-3">Listado de Productos</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title text-dark mb-0">Listado de Productos</h4>
+
+            <!-- Buscador con Botón Tradicional y Filtrado Integrado -->
+            <form th:action="@{/admin/dashboard}" method="get" class="d-flex" style="max-width: 350px; width: 100%;">
+                <input class="form-control me-2" type="search" id="buscarInput" name="buscar" th:value="${buscar}" placeholder="Buscar por nombre..." autocomplete="off">
+                <button class="btn btn-outline-primary" type="submit">Buscar</button>
+                <a th:if="${buscar != null && !buscar.isBlank()}" th:href="@{/admin/dashboard}" class="btn btn-outline-secondary ms-1">Limpiar</a>
+            </form>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
@@ -72,7 +81,7 @@
                     <th class="text-center">Acciones</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="tablaProductosBody">
                 <tr th:each="prod : ${productos}">
                     <td th:text="${prod.id}">1</td>
                     <td>
@@ -85,17 +94,14 @@
                     </td>
                     <td th:text="${'$ ' + #numbers.formatDecimal(prod.precio, 1, 'POINT', 2, 'COMMA')}">$ 0,00</td>
                     <td class="text-center">
-                        <!-- Botón Editar -->
                         <button type="button" class="btn btn-warning btn-sm text-white me-1" data-bs-toggle="modal" th:data-bs-target="${'#editModal' + prod.id}">
                             Editar
                         </button>
-
-                        <!-- Botón Eliminar -->
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="${'#deleteModal' + prod.id}">
                             Eliminar
                         </button>
 
-                        <!-- Modal de Edición Completo -->
+                        <!-- Modal de Edición -->
                         <div class="modal fade" th:id="${'editModal' + prod.id}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content text-start">
@@ -161,11 +167,30 @@
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(productos)}">
-                    <td colspan="6" class="text-center text-muted">No hay productos registrados en el sistema.</td>
+                    <td colspan="6" class="text-center text-muted py-4">No se encontraron productos en el sistema.</td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Navegación de Paginación -->
+        <div th:if="${totalPaginas > 1}" class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">Mostrando página <span th:text="${paginaActual + 1}"></span> de <span th:text="${totalPaginas}"></span> (<span th:text="${totalElementos}"></span> productos en total)</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${paginaActual == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/dashboard(page=${paginaActual - 1}, buscar=${buscar})}">Anterior</a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, totalPaginas - 1)}" class="page-item" th:classappend="${i == paginaActual} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/dashboard(page=${i}, buscar=${buscar})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${paginaActual + 1 == totalPaginas} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/dashboard(page=${paginaActual + 1}, buscar=${buscar})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
     </div>
 </main>
 
@@ -174,5 +199,43 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script de Filtrado Silencioso -->
+<!-- Script de Filtrado Silencioso desde la 1° Letra -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buscarInput = document.getElementById("buscarInput");
+        const tablaBody = document.getElementById("tablaProductosBody");
+
+        if (buscarInput && tablaBody) {
+            // Función para quitar acentos y normalizar texto
+            const normalizarTexto = (texto) => {
+                return texto
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+            };
+
+            buscarInput.addEventListener("input", function () {
+                const query = normalizarTexto(this.value);
+                const filas = tablaBody.getElementsByTagName("tr");
+
+                Array.from(filas).forEach(fila => {
+                    // Evita filtrar la fila de "No se encontraron productos"
+                    if (fila.cells.length <= 1) return;
+
+                    const textoFila = normalizarTexto(fila.textContent);
+
+                    if (query === "" || textoFila.includes(query)) {
+                        fila.style.display = "";
+                    } else {
+                        fila.style.display = "none";
+                    }
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>
