@@ -31,6 +31,12 @@ public class WebController {
         return "redirect:/admin/dashboard";
     }
 
+    @PostMapping("/admin/productos/actualizar")
+    public String actualizarProducto(@ModelAttribute Producto producto) {
+        productoRepository.save(producto); // save actúa como update si trae ID existente
+        return "redirect:/admin/dashboard";
+    }
+
     @GetMapping("/admin/productos/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id) {
         productoRepository.deleteById(id);
