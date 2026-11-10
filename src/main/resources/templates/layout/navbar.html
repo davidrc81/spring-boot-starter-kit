@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Spring Boot 3 Starter Kit - Panel Admin</span>
+    <div class="d-flex align-items-center">
+                <span class="text-light me-3 small"
+                      th:text="${#ctx.springSecurityContext?.authentication?.name ?: 'Administrador'}">
+                    Usuario
+                </span>
+      <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
+    </div>
+  </div>
+</nav>
+
+</body>
+</html>
