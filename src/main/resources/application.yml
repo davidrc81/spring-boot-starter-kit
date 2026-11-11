@@ -23,7 +23,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        # Esta línea soluciona el mapeo de Enums en H2 / MySQL:
+        # Esta lï¿½nea soluciona el mapeo de Enums en H2 / MySQL:
         type:
           preferred_enum_type: varchar
 
