@@ -1,33 +1,40 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: startedKit
+
+  # Configuración de H2 Console
   h2:
     console:
       enabled: true
       path: /h2-console
       settings:
         web-allow-others: false
+
+  # Base de Datos (H2 en memoria por defecto)
   datasource:
-    url: jdbc:h2:mem:starterkitdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
+    url: ${DB_URL:jdbc:h2:mem:starterkitdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    driverClassName: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  # Configuración JPA / Hibernate
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: ${JPA_DIALECT:org.hibernate.dialect.H2Dialect}
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
     properties:
       hibernate:
         format_sql: true
-        # Esta l�nea soluciona el mapeo de Enums en H2 / MySQL:
+        # Garantiza el mapeo correcto de Enums como VARCHAR en H2 y MySQL
         type:
           preferred_enum_type: varchar
 
+# Parámetros de Seguridad JWT
 app:
   jwt:
-    secret: dGFtYmllbl91bmFfY2xhdmVfc2VjcmV0YV9tdXlfbGFyZ2FfeV9zZWd1cmFfcGFyYV9qd3RfMjAyNg==
-    expiration-ms: 86400000
+    secret: ${JWT_SECRET:dGFtYmllbl91bmFfY2xhdmVfc2VjcmV0YV9tdXlfbGFyZ2FfeV9zZWd1cmFfcGFyYV9qd3RfMjAyNg==}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}

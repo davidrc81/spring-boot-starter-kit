@@ -1,8 +1,7 @@
-Markdown
 # 🚀 Spring Boot 3 Boilerplate Starter Kit (JWT & Role-Based Security)
 
-[![Java Version](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java Version](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.11-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 [Español](#español) | [English](#english)
@@ -12,37 +11,38 @@ Markdown
 <a name="español"></a>
 ## 🇦🇷 Descripción en Español
 
-**startedKit** es una plantilla base (Boilerplate) profesional, robusta y escalable desarrollada en **Java 17+** y **Spring Boot 3**. Diseñada para acelerar el desarrollo de proyectos backend de nivel comercial, incluye autenticación sin estado mediante **JWT**, control de acceso basado en roles (RBAC), manejo global de excepciones estandarizado y documentación interactiva con **Swagger / OpenAPI**.
+**startedKit** es una plantilla base (Boilerplate) profesional, robusta y escalable desarrollada en **Java 21** y **Spring Boot 3.3.11**. Diseñada para acelerar el desarrollo de proyectos backend de nivel comercial, incluye autenticación sin estado mediante **JWT**, control de acceso basado en roles (RBAC), manejo global de excepciones estandarizado y documentación interactiva con **Swagger / OpenAPI**.
 
 ### 🛠️ Tecnologías Utilizadas
 
-* **Lenguaje:** Java 17+
-* **Framework Backend:** Spring Boot 3
-* **Seguridad:** Spring Security, JSON Web Token (JWT)
-* **Persistencia:** Spring Data JPA, H2 Database (Desarrollo), compatible con MySQL/PostgreSQL (Producción)
-* **Documentación API:** Springdoc OpenAPI / Swagger UI
-* **Herramientas & DTOs:** Lombok, Maven
+- **Lenguaje:** Java 21
+- **Framework Backend:** Spring Boot 3.3.11
+- **Seguridad:** Spring Security, JSON Web Token (JWT)
+- **Persistencia:** Spring Data JPA, H2 Database (Desarrollo), compatible con MySQL/PostgreSQL (Producción)
+- **Documentación API:** Springdoc OpenAPI / Swagger UI
+- **Herramientas & DTOs:** Lombok, Maven Wrapper (`mvnw`)
 
 ### ✨ Características Principales
 
 1. **Autenticación & Autorización Stateless:**
-   * Login y Registro securizados mediante JWT.
-   * Roles preconfigurados: `ROLE_ADMIN` y `ROLE_USER`.
-   * Protección granular por endpoints utilizando la anotación `@PreAuthorize`.
+   - Login y Registro securizados mediante JWT.
+   - Roles preconfigurados: `ROLE_ADMIN` y `ROLE_USER`.
+   - Protección granular por endpoints utilizando la anotación `@PreAuthorize`.
 
 2. **Manejador Global de Excepciones:**
-   * Intercepción uniforme de errores mediante `@RestControllerAdvice`.
-   * Formato de respuesta JSON estandarizado para credenciales inválidas (`401`), accesos denegados (`403`) y errores de validación `@Valid` (`400`).
+   - Intercepción uniforme de errores mediante `@RestControllerAdvice`.
+   - Formato de respuesta JSON estandarizado para credenciales inválidas (`401`), accesos denegados (`403`) y errores de validación `@Valid` (`400`).
 
 3. **Paginación & Ordenamiento Dinámico:**
-   * DTO envoltorio genérico `PageResponse<T>` para listas optimizadas.
-   * Consultas paginadas por tamaño, número de página, criterio de ordenación y búsqueda.
+   - DTO envoltorio genérico `PageResponse<T>` para listas optimizadas.
+   - Consultas paginadas por tamaño, número de página, criterio de ordenación y búsqueda.
 
 4. **Configuración CORS Global:**
-   * Habilitado para integración inmediata con frontends en React, Angular, Vue o aplicaciones móviles.
+   - Habilitado para integración inmediata con frontends en React, Angular, Vue o aplicaciones móviles.
 
-5. **Documentación Interactiva integrada:**
-   * Swagger UI configurado con soporte para el header `Authorization: Bearer <JWT>`.
+5. **Documentación Interactiva & Suite de Tests:**
+   - Swagger UI configurado con soporte para el header `Authorization: Bearer <JWT>`.
+   - Tests unitarios y de integración con JUnit 5, Mockito y H2 en memoria.
 
 ---
 
@@ -51,28 +51,7 @@ Markdown
 #### 1. Clonar el Repositorio
 ```bash
 git clone [https://github.com/davidrc81/spring-boot-starter-kit.git](https://github.com/davidrc81/spring-boot-starter-kit.git)
-cd spring-boot-starter-kit
-2. Ejecutar la Aplicación
-Bash
-mvn spring-boot:run
-3. Acceso a Swagger UI y H2 Console
-Swagger UI: http://localhost:8080/swagger-ui.html
-
-Consola H2: http://localhost:8080/h2-console
-
-JDBC URL: jdbc:h2:mem:startedkitdb
-
-User: sa
-
-Password: (en blanco)
-
-🇬🇧 English Description
-startedKit is a professional, robust, and scalable backend boilerplate built with Java 17+ and Spring Boot 3. Designed to accelerate the creation of commercial-grade RESTful APIs, it features stateless JWT authentication, Role-Based Access Control (RBAC), standardized global exception handling, and interactive API documentation powered by OpenAPI / Swagger UI.
-
-🛠️ Tech Stack
-Language: Java 17+
-
-Core Framework: Spring Boot 3
+cd startedKit
 
 Security: Spring Security, JSON Web Tokens (JWT)
 
